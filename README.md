@@ -33,11 +33,9 @@ For Software:
 For Software:
 
 # Screenshots (Add at least 3)
-https://drive.google.com/file/d/1pQCfNDnYO_-bkI19lfDVYB2fAbFxIOPj/view?usp=sharing
-
-https://drive.google.com/file/d/1m3BF_TOgzNs4z4aqn6Bc9S8AvJ0Lcttf/view?usp=sharing
-
-https://drive.google.com/file/d/1hIVAfEytP7833QZ8hutMaaQqSBdlGKQ_/view?usp=sharing
+home.png
+exp1.png
+exp2.png
 
 
 # Schematic & Circuit
