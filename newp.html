@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fridge Complimenter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fridge-door {
+            background-image: linear-gradient(to bottom, #f7fafc, #e2e8f0);
+            border: 12px solid #4a5568;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .ingredient-chip {
+            animation: magnetize 0.3s ease-out;
+        }
+        @keyframes magnetize {
+            0% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .recipe-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div class="fridge-door w-full max-w-2xl p-6">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">
+            <span class="text-blue-600">🧊</span> Fridge Complimenter
+        </h1>
+        <p class="text-center text-gray-600 mb-6">Enter what's in your fridge and get cosmic approval!</p>
+
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex flex-wrap gap-2 mb-4" id="ingredient-chips">
+                <!-- Ingredient chips will appear here -->
+            </div>
+
+            <div class="flex">
+                <input 
+                    type="text" 
+                    id="ingredient-input" 
+                    placeholder="milk, eggs, cheese..." 
+                    class="flex-grow px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                <button 
+                    id="add-button"
+                    class="bg-blue-600 text-white px-4 py-2 rounded-r-lg hover:bg-blue-700 transition-colors"
+                >
+                    Add
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div id="compliment-display" class="min-h-24 p-4 bg-yellow-50 rounded-lg border border-yellow-200 flex items-center justify-center">
+                <p class="text-gray-500 italic text-center">Your fridge compliment will appear here...</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Recipe Ideas <span class="text-sm font-normal text-gray-500">(Powered by Spoonacular)</span></h2>
+            <div id="recipe-container" class="grid gap-4">
+                <div class="recipe-card bg-gray-50 p-4 rounded-lg border border-gray-200 transition-transform cursor-pointer">
+                    <img 
+                        src="https://placehold.co/600x400?text=Recipe+Image" 
+                        alt="Visual representation of suggested recipe with fresh ingredients" 
+                        class="w-full h-40 object-cover rounded mb-3"
+                        onerror="this.src='https://placehold.co/600x400?text=Image+Not+Available'"
+                    >
+                    <h3 class="font-medium text-gray-800 mb-1">Your recipes will appear here</h3>
+                    <p class="text-sm text-gray-600">After analyzing your fridge contents</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Compliment database
+        const compliments = {
+            'default': [
+                "Your fridge is a blank canvas of culinary potential!",
+                "The emptiness... it's so minimalist and chic!"
+            ],
+            'milk': [
+                "Milk? Someone's ready for strong bones and stronger life choices!",
+                "Milk enthusiast detected! Your future self thanks you for the calcium."
+            ],
+            'eggs': [
+                "Eggs in the fridge? You're clearly an accomplished breakfast savant.",
+                "With those eggs, you're 5 minutes away from gourmet status."
+            ],
+            'cheese': [
+                "Cheese detected! Are you hosting a wine party we don't know about?",
+                "Cheese proves you're a person of culture and refined taste."
+            ],
+            'tomato': [
+                "Tomatoes? Someone's either Italian or health-conscious. Maybe both!",
+                "Those tomatoes are blushing at how awesome your fridge looks."
+            ],
+            'spinach': [
+                "Spinach means you're either Popeye or a salad superstar. Maybe both!",
+                "Leafy greens detected! Your future healthy self is already thanking you."
+            ],
+            'beer': [
+                "Beer in the fridge? Someone knows how to prioritize properly!",
+                "Those chilled brews prove you're the MVP of relaxation."
+            ],
+            'chicken': [
+                "Chicken in the house! Meal prep champion detected.",
+                "With that chicken, you're basically a home chef in disguise."
+            ]
+        };
+
+        // Local storage setup
+        const STORAGE_KEY = 'fridgeContents';
+        let ingredients = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+        // DOM elements
+        const inputEl = document.getElementById('ingredient-input');
+        const addButton = document.getElementById('add-button');
+        const chipsContainer = document.getElementById('ingredient-chips');
+        const complimentDisplay = document.getElementById('compliment-display');
+        const recipeContainer = document.getElementById('recipe-container');
+
+        // Initialize
+        function init() {
+            renderIngredients();
+            generateCompliment();
+        }
+
+        // Add ingredient
+        function addIngredient() {
+            const value = inputEl.value.trim();
+            if (!value) return;
+
+            // Split by commas and trim each item
+            const newIngredients = value.split(',')
+                .map(item => item.trim())
+                .filter(item => item.length > 0);
+
+            ingredients = [...new Set([...ingredients, ...newIngredients])];
+            inputEl.value = '';
+            saveToLocalStorage();
+            renderIngredients();
+            generateCompliment();
+            fetchRecipes();
+        }
+
+        // Remove ingredient
+        function removeIngredient(index) {
+            ingredients.splice(index, 1);
+            saveToLocalStorage();
+            renderIngredients();
+            generateCompliment();
+            fetchRecipes();
+        }
+
+        // Save to local storage
+        function saveToLocalStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(ingredients));
+        }
+
+        // Render ingredients as chips
+        function renderIngredients() {
+            chipsContainer.innerHTML = '';
+            
+            if (ingredients.length === 0) {
+                chipsContainer.innerHTML = '<p class="text-gray-400 italic">No ingredients added yet</p>';
+                return;
+            }
+
+            ingredients.forEach((ingredient, index) => {
+                const chip = document.createElement('div');
+                chip.className = 'ingredient-chip bg-blue-100 text-blue-800 px-3 py-1 rounded-full flex items-center gap-2';
+                chip.innerHTML = `
+                    ${ingredient}
+                    <button 
+                        class="text-blue-600 hover:text-blue-800" 
+                        data-index="${index}"
+                        aria-label="Remove ${ingredient}"
+                    >
+                        ×
+                    </button>
+                `;
+                chipsContainer.appendChild(chip);
+            });
+
+            // Add event listeners to remove buttons
+            document.querySelectorAll('#ingredient-chips button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    removeIngredient(parseInt(e.target.getAttribute('data-index')));
+                });
+            });
+        }
+
+        // Generate a compliment
+        function generateCompliment() {
+            if (ingredients.length === 0) {
+                complimentDisplay.innerHTML = `
+                    <p class="text-gray-500 italic">Add some ingredients to get your first compliment!</p>
+                `;
+                return;
+            }
+
+            // Find the best matching compliment
+            let bestMatchCompliments = compliments.default;
+            
+            // Find the first ingredient we have a specific compliment for
+            for (const ingredient of ingredients) {
+                const lowerIngredient = ingredient.toLowerCase();
+                if (compliments[lowerIngredient]) {
+                    bestMatchCompliments = compliments[lowerIngredient];
+                    break;
+                }
+            }
+
+            // Randomly select a compliment
+            const randomIndex = Math.floor(Math.random() * bestMatchCompliments.length);
+            const compliment = bestMatchCompliments[randomIndex];
+
+            complimentDisplay.innerHTML = `
+                <div class="text-center animate-fade-in">
+                    <p class="text-lg font-medium text-gray-800 mb-2">${compliment}</p>
+                    <p class="text-sm text-gray-500">Your fridge contains: ${ingredients.join(', ')}</p>
+                </div>
+            `;
+        }
+
+        // Spoonacular API Configuration
+        const API_KEY = 'YOUR_SPOONACULAR_API_KEY'; // Replace with your actual key
+        const API_URL = 'https://api.spoonacular.com/recipes/findByIngredients';
+
+        // Fetch recipe suggestions from Spoonacular API
+        async function fetchRecipes() {
+            if (ingredients.length === 0) {
+                recipeContainer.innerHTML = `
+                    <div class="recipe-card bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <p class="text-gray-500 italic text-center">Add ingredients to get recipe suggestions</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Show loading state
+            recipeContainer.innerHTML = `
+                <div class="flex justify-center items-center h-40">
+                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(
+                    `${API_URL}?ingredients=${ingredients.join(',')}&number=3&apiKey=${API_KEY}`
+                );
+                const recipes = await response.json();
+                
+                if (!recipes || recipes.length === 0) {
+                    throw new Error('No recipes found');
+                }
+
+                // Render recipes
+            recipeContainer.innerHTML = recipes.map(recipe => `
+                    <div class="recipe-card bg-gray-50 p-4 rounded-lg border border-gray-200 transition-transform hover:shadow-md">
+                        <img 
+                            src="${recipe.image || 'https://placehold.co/600x400?text=Recipe+Image'}" 
+                            alt="${recipe.title} visual representation" 
+                            class="w-full h-40 object-cover rounded mb-3"
+                            onerror="this.src='https://placehold.co/600x400?text=Recipe+Image'"
+                        >
+                        <h3 class="font-medium text-gray-800 mb-1">${recipe.title}</h3>
+                        <p class="text-sm text-gray-600">${recipe.missedIngredientCount ? 
+                            `Uses ${recipe.usedIngredientCount} of your ingredients` : 
+                            'Perfect match for your ingredients'}</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                recipeContainer.innerHTML = `
+                    <div class="recipe-card bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <p class="text-red-500 italic text-center">Error loading recipes. Please try again.</p>
+                    </div>
+                `;
+                console.error('API Error:', error);
+            }
+        }
+
+        // Event listeners
+        addButton.addEventListener('click', addIngredient);
+        inputEl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addIngredient();
+            }
+        });
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
