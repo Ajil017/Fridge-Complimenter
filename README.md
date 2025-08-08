@@ -32,8 +32,8 @@ For Software:
 ### Project Documentation
 For Software:
 
-# Screenshots (Add at least 3)
-images/exp1.png
+# Screenshots
+Fridge-Complimenter/images/exp1.png
 exp1.png
 exp2.png
 
