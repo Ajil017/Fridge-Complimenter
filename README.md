@@ -33,9 +33,9 @@ For Software:
 For Software:
 
 # Screenshots
+![Project Preview](./images/home.png)
 ![Project Preview](./images/exp1.png)
-exp1.png
-exp2.png
+![Project Preview](./images/exp2.png)
 
 
 # Schematic & Circuit
@@ -47,9 +47,9 @@ exp2.png
 
 # Build Photos
 
-https://drive.google.com/file/d/1WxZsKOQXn6dLBk9YzqkoisCxaeq_eVZ9/view?usp=sharing
+![Project Preview](./images/work1.png)
 
-https://drive.google.com/file/d/14ETGfvt4vQfUU_K6kaD1tIQjVl09c2CN/view?usp=sharing
+![Project Preview](./images/work2.png)
 
 
 
