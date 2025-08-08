@@ -33,7 +33,7 @@ For Software:
 For Software:
 
 # Screenshots (Add at least 3)
-home.png
+images/exp1.png
 exp1.png
 exp2.png
 
