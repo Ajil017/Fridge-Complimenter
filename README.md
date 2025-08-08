@@ -33,7 +33,7 @@ For Software:
 For Software:
 
 # Screenshots
-![Project Preview](./images/home.png)
+![Project Preview](./images/exp1.png)
 exp1.png
 exp2.png
 
