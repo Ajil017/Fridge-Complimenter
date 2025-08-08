@@ -33,7 +33,7 @@ For Software:
 For Software:
 
 # Screenshots
-Fridge-Complimenter/images/exp1.png
+![Project Preview](./images/home.png)
 exp1.png
 exp2.png
 
