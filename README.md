@@ -38,13 +38,6 @@ For Software:
 ![Project Preview](./images/exp2.png)
 
 
-# Schematic & Circuit
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
-
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
-
 # Build Photos
 
 ![Project Preview](./images/work1.png)
